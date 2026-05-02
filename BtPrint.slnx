@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="LICENSE" />
+    <File Path="publish.ps1" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="EscPosNet/ESCPOS_NET.UnitTest/ESCPOS_NET.UnitTest.csproj" />
+  <Project Path="EscPosNet/ESCPOS_NET/ESCPOS_NET.csproj" />
+  <Project Path="Src/BtPrint/BtPrint.csproj" />
+</Solution>
