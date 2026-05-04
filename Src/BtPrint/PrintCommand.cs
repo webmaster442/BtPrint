@@ -1,39 +1,15 @@
-﻿using ESCPOS_NET;
+﻿using System.Text;
+
+using ESCPOS_NET;
 using ESCPOS_NET.Emitters;
+
 using Spectre.Console;
 using Spectre.Console.Cli;
-using System.IO.Ports;
-using System.Text;
 
 namespace BtPrint;
 
 internal sealed class PrintCommand : AsyncCommand<PrintCommandSettings>
 {
-    private static int CalculateBytesPerSecond(int baudRate)
-        => baudRate / 10;
-
-    private static long GetByteCount(byte[][] bytes)
-    {
-        long count = 0;
-        foreach (var row in bytes)
-        {
-            count += row.Length;
-        }
-        return count;
-    }
-
-    private static async Task WaitTillDone(long byteCount, long bytesPerSecond)
-    {
-        const int minimumWaitTimeInSeconds = 2;
-        long secondsToWait = (byteCount / bytesPerSecond) + minimumWaitTimeInSeconds;
-        do
-        {
-            await Task.Delay(1000);
-            --secondsToWait;
-        }
-        while (secondsToWait > 0);
-    }
-
     private static byte[][] PrepareImagePayload(BaseCommandEmitter e, string fileName, int maxWidth)
     {
         return
@@ -88,14 +64,26 @@ internal sealed class PrintCommand : AsyncCommand<PrintCommandSettings>
                 printer.Write(payload);
             }
 
-            AnsiConsole.MarkupLine("[green]Waiting for the printer to finish...[/]");
-            await WaitTillDone(GetByteCount(payload), CalculateBytesPerSecond(settings.BaudRate)).Spinner(Spinner.Known.BouncingBar);
+            AnsiConsole.MarkupLine("Printing.... Press the ESC key when printer is finished, to disconnect");
+            WaitForESCKey();
 
             printer.Connected -= OnConnected;
             printer.StatusChanged -= OnStatusChange;
         }
 
         return 0;
+    }
+
+    private static void WaitForESCKey()
+    {
+        while (true)
+        {
+            var key = Console.ReadKey(false);
+            if (key.Key == ConsoleKey.Escape)
+            {
+                break;
+            }
+        }
     }
 
     private void OnStatusChange(object? sender, PrinterStatusEventArgs e)

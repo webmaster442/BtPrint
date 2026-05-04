@@ -19,8 +19,8 @@ internal class PrintCommandSettings : CommandSettings
     public int BaudRate { get; set; } = 115200;
 
     [CommandOption("-w|--max-width")]
-    [Description("The maximum width of the printed image in pixels. This setting is ignored for text files. Default is 500")]
-    public int MaxWidth { get; set; } = 500;
+    [Description("The maximum width of the printed image in pixels. This setting is ignored for text files. Default is 400")]
+    public int MaxWidth { get; set; } = 400;
 
     [CommandArgument(0, "<filename>")]
     [Description("The path to the file to print. Supported formats are .jpg, .jpeg, .bmp, .png, .txt, and .gif.")]
