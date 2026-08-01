@@ -22,14 +22,24 @@ internal class PrintCommandSettings : CommandSettings
     [Description("The maximum width of the printed image in pixels. This setting is ignored for text files. Default is 400")]
     public int MaxWidth { get; set; } = 400;
 
-    [CommandArgument(0, "<filename>")]
+    [CommandArgument(0, "[<filename>]")]
     [Description("The path to the file to print. Supported formats are .jpg, .jpeg, .bmp, .png, .txt, and .gif.")]
     public string FileName { get; set; } = "";
+
+    [CommandOption("-l|--list-ports")]
+    [Description("List all available serial ports. When specified, the command will list the ports and exit.")]
+    public bool ListPorts { get; set; } = false;
 
     public bool IsText => Path.GetExtension(FileName).Equals(".txt", StringComparison.InvariantCultureIgnoreCase);
 
     public override ValidationResult Validate()
     {
+        if (ListPorts)
+        {
+            // If the user requested to list ports, we don't need to validate other settings.
+            return ValidationResult.Success();
+        }
+
         if (string.IsNullOrEmpty(Port))
         {
             return ValidationResult.Error("Port is required.");

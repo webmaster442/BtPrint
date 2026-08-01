@@ -1,7 +1,8 @@
 {
   "profiles": {
     "BtPrint": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "--list-ports"
     }
   }
 }

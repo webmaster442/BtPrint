@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO.Ports;
+using System.Text;
 
 using ESCPOS_NET;
 using ESCPOS_NET.Emitters;
@@ -33,9 +34,15 @@ internal sealed class PrintCommand : AsyncCommand<PrintCommandSettings>
     }
 
     protected override async Task<int> ExecuteAsync(CommandContext context,
-                                              PrintCommandSettings settings,
-                                              CancellationToken cancellationToken)
+                                                    PrintCommandSettings settings,
+                                                    CancellationToken cancellationToken)
     {
+        if (settings.ListPorts)
+        {
+            ListPorts();
+            return 0;
+        }
+
         var fileToPrint = Path.GetFullPath(settings.FileName);
 
         AnsiConsole.MarkupLine("[green]Connecting to printer...[/]");
@@ -72,6 +79,23 @@ internal sealed class PrintCommand : AsyncCommand<PrintCommandSettings>
         }
 
         return 0;
+    }
+
+    private static void ListPorts()
+    {
+        var ports = SerialPort.GetPortNames();
+        if (ports.Length == 0)
+        {
+            AnsiConsole.MarkupLine("[red]No serial ports found.[/]");
+        }
+        else
+        {
+            AnsiConsole.MarkupLine("[green]Available serial ports:[/]");
+            foreach (var port in ports)
+            {
+                AnsiConsole.MarkupLine($" - {port.EscapeMarkup()}");
+            }
+        }
     }
 
     private static void WaitForESCKey()
